@@ -29,6 +29,7 @@ public class GunController : MonoBehaviour
     //필요한 컴퍼넌트
     [SerializeField]
     private Camera theCam; //*게임 화면이 카메라 시점인 경우임! 카메라 시점에서 정 가운데 총알 발사할 것!
+    private Crosshair theCrosshair;
 
     //피격 이펙트
     [SerializeField]
@@ -38,6 +39,7 @@ public class GunController : MonoBehaviour
     {
         originPos = Vector3.zero;
         audioSource = GetComponent<AudioSource>();
+        theCrosshair = FindObjectOfType<Crosshair>();
     }
 
     void Update()
@@ -86,6 +88,7 @@ public class GunController : MonoBehaviour
     //발사 후 계산
     private void Shoot() //(발사 후)
     {
+        theCrosshair.FireAnimation();
         currentGun.currentBulletCount--; //총알 개수 -1
         currentFireRate = currentGun.fireRate; //발사 후 연사속도 재계산
         PlaySE(currentGun.fire_Sound);
@@ -270,5 +273,10 @@ public class GunController : MonoBehaviour
     public Gun GetGun()
     {
         return currentGun; //GetGun함수가 호출되면 Gun클래스의 currentGun이 반환
+    }
+
+    public bool GetFineSightMode()
+    {
+        return isFineSightMode;
     }
 }
