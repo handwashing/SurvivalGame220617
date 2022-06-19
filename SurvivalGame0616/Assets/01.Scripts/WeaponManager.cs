@@ -8,7 +8,7 @@ public class WeaponManager : MonoBehaviour
     public static bool isChangeWeapon = false; //true => ChangeWeapon x
 
     //현재 무기와 현재 무기의 애니메이션
-    public static Gun currentWeapon;
+    public static Transform currentWeapon;
     public static Animator currentWeaponAnim;
 
     //현재 무기의 타입
@@ -91,7 +91,7 @@ public class WeaponManager : MonoBehaviour
     {
         if (_type == "GUN")
             theGunController.GunChange(gunDictionary[_name]);
-       // else if (_type == "HAND")
-            //theHandController.CloseWeaponChange(handDictionary[_name]);
+         else if (_type == "HAND")
+            theHandController.HandChange(handDictionary[_name]);
     }
 }

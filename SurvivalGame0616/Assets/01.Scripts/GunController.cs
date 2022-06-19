@@ -300,7 +300,8 @@ public class GunController : MonoBehaviour
            WeaponManager.currentWeapon.gameObject.SetActive(false); //기존에 들고있던 무기 제거(비활성화)
     
         currentGun = _gun;
-        WeaponManager.currentWeapon = currentGun;
+        WeaponManager.currentWeapon = currentGun.GetComponent<Transform>();
+        WeaponManager.currentWeaponAnim = currentGun.anim;
 
         currentGun.transform.localPosition = Vector3.zero; //총의 경우 정조준을하면 좌표값이 달라짐 / 다른 무기에서 총으로 변경을 하면 transform.localPosition이 달라질 수도 있음
         currentGun.gameObject.SetActive(true);
