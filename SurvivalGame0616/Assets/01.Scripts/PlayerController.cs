@@ -163,6 +163,7 @@ public class PlayerController : MonoBehaviour
     //-> 지면과 닿게 됨...isGround는 true를 반환해 점프할 수 있는 상태가 됨...
     //지면의 경사에 따라 오차가 생기는 것을 방지하기 위해 여유주기 /+0.1f/
         isGround = Physics.Raycast(transform.position, Vector3.down, capsuleCollider .bounds.extents.y + 0.1f);
+        theCrosshair.RunningAnimation(!isGround);
     }
 
 
@@ -218,7 +219,7 @@ public class PlayerController : MonoBehaviour
 
     private void MoveCheck()     //움직임 체크
     {//달리지 않을 때, 웅크리지 않을때만 걷고있는지 체크하기
-        if (!isRun && !isCrouch)
+        if (!isRun && !isCrouch && isGround)
         {   
             // if(lastPos != transform.position)
             //     isWalk = true;//만약 아주 작은 경사로가 있으면, 아주 미세한 단위로 미끄러짐 -> 현재 프레임과 전 프레임의 위치가 아주 작은 차이로 달라지게 됨

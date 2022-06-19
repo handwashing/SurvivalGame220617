@@ -31,6 +31,11 @@ public class Crosshair : MonoBehaviour
         animator.SetBool("Crouching", _flag);
    }
 
+   public void FineSightAnimation(bool _flag)
+   {
+        animator.SetBool("FineSight", _flag);
+   }
+
    public void FireAnimation()
    {
         if (animator.GetBool("Walking"))
@@ -44,13 +49,13 @@ public class Crosshair : MonoBehaviour
    public float GetAccuracy()
    {//낮으면 낮을수록 뻗치는 정도가 줄어든다..
     if (animator.GetBool("Walking"))
-        gunAccuracy = 0.08f;     
+        gunAccuracy = 0.06f;     
     else if (animator.GetBool("Crouching"))
-        gunAccuracy = 0.02f; 
+        gunAccuracy = 0.015f; 
     else if (theGunController.GetFineSightMode())
         gunAccuracy = 0.001f; 
     else
-        gunAccuracy = 0.04f;
+        gunAccuracy = 0.035f;
 
     return gunAccuracy;
    }

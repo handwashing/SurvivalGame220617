@@ -100,8 +100,12 @@ public class GunController : MonoBehaviour
     }
 
     private void Hit()
-    {//현재 위치에서 발사 / 충돌한게 있다면 반환
-        if (Physics.Raycast(theCam.transform.position, theCam.transform.forward, out hitInfo, currentGun.range))
+    {//현재 위치에서 발사 / 충돌한게 있다면 반환 / 기존값에 Vector3()만큼의 값을 더하자
+        if (Physics.Raycast(theCam.transform.position, theCam.transform.forward + //카메라 현위치에서 최솟값부터 최댓값을 랜덤값으로/ forward방향으로 더해주기
+        new Vector3(Random.Range(-theCrosshair.GetAccuracy() - currentGun.accuracy, theCrosshair.GetAccuracy() + currentGun.accuracy), 
+                    Random.Range(-theCrosshair.GetAccuracy() - currentGun.accuracy, theCrosshair.GetAccuracy() + currentGun.accuracy),
+                    0)
+        , out hitInfo, currentGun.range))
         {
             GameObject clone = Instantiate(hit_effect_prefab, hitInfo.point, Quaternion.LookRotation(hitInfo.normal));
             Destroy(clone, 2f); //2초 후에 생성된 클론 파괴
@@ -118,6 +122,16 @@ public class GunController : MonoBehaviour
             StartCoroutine(ReloadCoroutine());
         }
 
+    }
+
+    //재장전 취소
+    public void CancelReload()
+    {
+        if (isReload)
+        {
+            StopAllCoroutines();
+            isReload = false;
+        }
     }
 
     //재장전
@@ -178,8 +192,8 @@ public class GunController : MonoBehaviour
     private void FineSight()
     {
         isFineSightMode = !isFineSightMode; //위의 FineSigh가 실행될 때마다 알아서 true,false로 바뀌게 함... / 처음에는 false이니 true로 바꿔짐...
-        currentGun.anim.SetBool("FineSightMode", isFineSightMode);
-    
+        currentGun.anim.SetBool("FineSightMode", isFineSightMode); //총을 가운데로 모아주는 애니메이션
+        theCrosshair.FineSightAnimation(isFineSightMode); //크로스헤어 애니메이션
         //정조준인지 아닌지 구분
         if (isFineSightMode)
         {   
@@ -279,4 +293,19 @@ public class GunController : MonoBehaviour
     {
         return isFineSightMode;
     }
+
+    public void GunChange(Gun _gun)
+    {
+        if(WeaponManager.currentWeapon != null) //무언가(weapon)를 들고있는 경우..
+           WeaponManager.currentWeapon.gameObject.SetActive(false); //기존에 들고있던 무기 제거(비활성화)
+    
+        currentGun = _gun;
+        WeaponManager.currentWeapon = currentGun;
+
+        currentGun.transform.localPosition = Vector3.zero; //총의 경우 정조준을하면 좌표값이 달라짐 / 다른 무기에서 총으로 변경을 하면 transform.localPosition이 달라질 수도 있음
+        currentGun.gameObject.SetActive(true);
+    
+    }
+
 }
+
