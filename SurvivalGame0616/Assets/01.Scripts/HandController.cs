@@ -30,11 +30,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class HandController : MonoBehaviour
 {
     //현재 장착된 Hand형 타입(무기)
     [SerializeField]
-    private Hand currentHand;
+    public Hand currentHand;
 
     //공격중?
     private bool isAttack = false;
@@ -110,5 +111,12 @@ public class HandController : MonoBehaviour
         if(WeaponManager.currentWeapon != null) //무언가(weapon)를 들고있는 경우..
            WeaponManager.currentWeapon.gameObject.SetActive(false); //기존에 들고있던 무기 제거(비활성화)
     
+        currentHand = _hand;
+        WeaponManager.currentWeapon = currentHand.GetComponent<Transform>();
+        WeaponManager.currentWeaponAnim = currentHand.anim;
+
+        currentHand.transform.localPosition = Vector3.zero; 
+    
     }
 }
+

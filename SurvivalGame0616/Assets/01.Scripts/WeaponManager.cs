@@ -55,9 +55,11 @@ public class WeaponManager : MonoBehaviour
     {
         if (! isChangeWeapon)
         {//숫자 1이 눌렸을 경우 / 무기 교체 실행(서브머신건)
-            if (Input.GetKeyDown(KeyCode.Alpha1));
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                StartCoroutine(ChangeWeaponCoroutine("HAND", "BareHand"));
         //숫자 2가 눌렸을 경우 / 무기 교체 실행(맨손) 
-            else if (Input.GetKeyDown(KeyCode.Alpha2));
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+                StartCoroutine(ChangeWeaponCoroutine("GUN", "SubMachineGun1"));
         }
     }
 
@@ -71,8 +73,14 @@ public class WeaponManager : MonoBehaviour
         //바뀐 무기를 새로 꺼내야함 정조준 상태를 하고 있다면 먼저 해제해야함
         CancelPreWeaponAction();
         WeaponChange(_type, _name);
+
+        yield return new WaitForSeconds(changeWeaponEndDelayTime); //무기를 꺼내는 애니메이션이 끝날때까지 대기
+
+        currentWeaponType = _type; //바꾸고자 할 타임_type을 현재 타입에 넣기
+        isChangeWeapon = false; //무기 교체가 가능하도록...
     }
 
+    //무기 취소 함수
     private void CancelPreWeaponAction()
     {//현재 타입에 따라서...
         switch(currentWeaponType)
@@ -89,7 +97,7 @@ public class WeaponManager : MonoBehaviour
     //무기 교체 함수
     private void WeaponChange(string _type, string _name)
     {
-        if (_type == "GUN")
+        if (_type == "GUN")   
             theGunController.GunChange(gunDictionary[_name]);
          else if (_type == "HAND")
             theHandController.HandChange(handDictionary[_name]);
