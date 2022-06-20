@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     //스피드 조정 변수
-    //SerializeField / private상태지만 인스펙터 창에서 수정 가능
     [SerializeField] 
     private float walkSpeed; //걷기 속도
     [SerializeField] 
@@ -18,16 +17,9 @@ public class PlayerController : MonoBehaviour
     private float jumpForce; //얼마만큼의 힘으로 위로 올라갈지
 
     //상태 변수
-    private bool isWalk = false;
     private bool isRun = false; //걷기인지 달리기인지 (false가 기본값)
     private bool isCrouch = false; //앉아있는지 아닌지
     private bool isGround = true; //땅인지 아닌지
-
-    //움직임 체크 변수
-    private Vector3 lastPos; 
-    //전 플레임에 현재 위치를 기록시킬 변수
-    //전 프레임에 플레이어의 현재 위치와 현재 프레임의 플레이어 현재 위치를 비교해
-    //그 위치가 같다면 걷고 있지 않는 것/ 달라졌다면 걷고 있는 것 isWalk가 트루로...
 
     //앉았을 때 얼마나 앉을지 결정하는 변수
     [SerializeField] 
@@ -53,7 +45,6 @@ public class PlayerController : MonoBehaviour
     //플레이어의 실제 육체(몸) / 콜라이더로 충돌 영역 설정, 리지드바디로 콜라이더에 물리적 기능 추가
     private Rigidbody myRigid;
     private GunController theGunController;
-    private Crosshair theCrosshair;
 
     void Start()
     {
@@ -65,12 +56,12 @@ public class PlayerController : MonoBehaviour
         //플레이어가 캡슐 콜라이더를 통제할 수 있도록 가져오기...
         //리지드바디 컴퍼넌트를 마이리지드 변수에 넣겠다
         myRigid = GetComponent<Rigidbody>();
+        applySpeed = walkSpeed;  //달리기 전까지 기본속도는 걷기
+        
         theGunController = FindObjectOfType<GunController>();
-        theCrosshair = FindObjectOfType<Crosshair>(); //하이어라키의 객체를 뒤져서 Crosshair가 있다면 theCrosshai에 넣어주기
 
 
         //초기화
-        applySpeed = walkSpeed; //달리기 전까지 기본속도는 걷기
         originPosY = theCamera.transform.localPosition.y;
         applyCrouchPosY = originPosY; //기본 서있는 상태로 초기화
     }
@@ -82,7 +73,6 @@ public class PlayerController : MonoBehaviour
         TryRun(); //뛰거나 걷는것을 구분하는 함수(판단 후 움직임 제어 / 순서주의)
         TryCouch(); //앉으려고 시도
         Move(); //키입력에 따라 움직임이 실시간으로 이루어지게하는 처리
-        MoveCheck(); //(걷고 있는지) 움직임 체크
         CameraRotation(); // 상하 카메라 회전
         CharacterRotation();// 좌우 카메라 회전
     }
@@ -107,7 +97,6 @@ public class PlayerController : MonoBehaviour
         // else
         //     isCrouch = true; //그렇지 않으면 true 
         //이렇게도 쓸 수 있다!
-        theCrosshair.CrouchingAnimation(isCrouch);
 
         if (isCrouch) //isCrouch가 트루면 앉는 모션으로...
         {
@@ -163,7 +152,6 @@ public class PlayerController : MonoBehaviour
     //-> 지면과 닿게 됨...isGround는 true를 반환해 점프할 수 있는 상태가 됨...
     //지면의 경사에 따라 오차가 생기는 것을 방지하기 위해 여유주기 /+0.1f/
         isGround = Physics.Raycast(transform.position, Vector3.down, capsuleCollider .bounds.extents.y + 0.1f);
-        theCrosshair.RunningAnimation(!isGround);
     }
 
 
@@ -187,17 +175,15 @@ public class PlayerController : MonoBehaviour
         theGunController.CancelFineSight(); //정조준 모드 해제
 
         isRun = true; 
-        theCrosshair.RunningAnimation(isRun);
         applySpeed = runSpeed; //스피드가 RunSpeed로 바뀜
     }
 
     private void RunningCancel() //달리기 취소
     {
-        isRun = false; 
-        theCrosshair.RunningAnimation(isRun);
+        isRun = true; 
         applySpeed = walkSpeed; //걷는 속도
     }
-    private void Move() //(매 프레임마다...)움직임 실행
+    private void Move() //움직임 실행
     {//상하좌우...move...
      
         float _moveDirX = Input.GetAxisRaw("Horizontal");
@@ -217,23 +203,6 @@ public class PlayerController : MonoBehaviour
         myRigid.MovePosition(transform.position + _velocity * Time.deltaTime);
     }
 
-    private void MoveCheck()     //움직임 체크
-    {//달리지 않을 때, 웅크리지 않을때만 걷고있는지 체크하기
-        if (!isRun && !isCrouch && isGround)
-        {   
-            // if(lastPos != transform.position)
-            //     isWalk = true;//만약 아주 작은 경사로가 있으면, 아주 미세한 단위로 미끄러짐 -> 현재 프레임과 전 프레임의 위치가 아주 작은 차이로 달라지게 됨
-            //그래서 0.01초 여유를 줘서 / 경사면에서 살짝 미끄러져도 걷는것으로 체크되지 x
-            if (Vector3.Distance(lastPos, transform.position) >= 0.01f) //lastPos와 transform.position사이의 거리 반환 / 이 반환값이 0.01보다 크다면 걷기
-                isWalk = true;
-            else
-                isWalk = false;
-
-            theCrosshair.WalkingAnimation(isWalk);
-            lastPos = transform.position; //lastPos에 현재 플레이어의 위치를 대입
-        }
-        
-    }
     private void CharacterRotation()
     {   //좌우 캐릭터 회전
         float _yRotation = Input.GetAxisRaw("Mouse X"); //마우스가 좌우로 움직이는 경우

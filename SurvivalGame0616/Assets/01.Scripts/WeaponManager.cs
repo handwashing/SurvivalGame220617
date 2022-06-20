@@ -8,7 +8,7 @@ public class WeaponManager : MonoBehaviour
     public static bool isChangeWeapon = false; //true => ChangeWeapon x
 
     //현재 무기와 현재 무기의 애니메이션
-    public static Transform currentWeapon;
+    public static Transform currentWeapon; //기존의 무기를 껐다 켜는 기능뿐...가장 기본적인 컴퍼넌트 트랜스폼 사용
     public static Animator currentWeaponAnim;
 
     //현재 무기의 타입
@@ -34,7 +34,7 @@ public class WeaponManager : MonoBehaviour
 
     //필요한 컴퍼넌트
     [SerializeField]
-    private GunController theGunController;
+    private GunController theGunController; //건이나 핸드중 하나를 비활성화하고 다른 하나를 실행할 수 있도록...
     [SerializeField]
     private HandController theHandController;
 
@@ -42,7 +42,7 @@ public class WeaponManager : MonoBehaviour
     void Start()
     {
         for (int i = 0; i < guns.Length; i ++)
-        {
+        { //gunDictionary에 gunName이 key값으로 들어가고, value로 guns[i]가(자신이) 들어간다.
             gunDictionary.Add(guns[i].gunName, guns[i]);
         }
         for (int i = 0; i < hands.Length; i++)
@@ -71,7 +71,7 @@ public class WeaponManager : MonoBehaviour
         yield return new WaitForSeconds(changeWeaponDelayTime); //무기를 넣을때까지 대기
 
         //바뀐 무기를 새로 꺼내야함 정조준 상태를 하고 있다면 먼저 해제해야함
-        CancelPreWeaponAction();
+        CancelPreWeaponAction(); //이전의 무기 취소
         WeaponChange(_type, _name);
 
         yield return new WaitForSeconds(changeWeaponEndDelayTime); //무기를 꺼내는 애니메이션이 끝날때까지 대기
@@ -88,8 +88,10 @@ public class WeaponManager : MonoBehaviour
             case "GUN":
                 theGunController.CancelFineSight();
                 theGunController.CancelReload();
+                GunController.isActivate = false; //이전의 것을 적용이 안되게 취소시키는 처리
                 break;
             case "HAND":
+                HandController.isActivate = false; //맨손상태일때 우클릭해도 정조준이 안될 것
                 break;
         }
     }

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class GunController : MonoBehaviour
 {
+    //활성화 여부
+    public static bool isActivate = true;
+
     //현재 장착된 총
     [SerializeField]
     private Gun currentGun;
@@ -47,10 +50,13 @@ public class GunController : MonoBehaviour
 
     void Update()
     {
-        GunFireRateCalc();
-        TryFire(); //발사 시도
-        TryReload(); //재장전 시도
-        TryFineSight(); //정조준 시도
+        if (isActivate)
+        {
+            GunFireRateCalc();
+            TryFire(); //발사 시도
+            TryReload(); //재장전 시도
+            TryFineSight(); //정조준 시도
+        }
     }
 
     //연사속도 재계산
@@ -308,6 +314,7 @@ public class GunController : MonoBehaviour
 
         currentGun.transform.localPosition = Vector3.zero; //총의 경우 정조준을하면 좌표값이 달라짐 / 다른 무기에서 총으로 변경을 하면 transform.localPosition이 달라질 수도 있음
         currentGun.gameObject.SetActive(true);
+        isActivate = true;
     
     }
 
