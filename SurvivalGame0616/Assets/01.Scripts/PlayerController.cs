@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
     //플레이어의 실제 육체(몸) / 콜라이더로 충돌 영역 설정, 리지드바디로 콜라이더에 물리적 기능 추가
     private Rigidbody myRigid;
     private GunController theGunController;
+    private Crosshair theCrosshair;
 
     void Start()
     {
@@ -64,6 +65,9 @@ public class PlayerController : MonoBehaviour
         //초기화
         originPosY = theCamera.transform.localPosition.y;
         applyCrouchPosY = originPosY; //기본 서있는 상태로 초기화
+        theCrosshair = FindObjectOfType<Crosshair>(); //(?)
+
+
     }
 
     void Update()
@@ -152,6 +156,7 @@ public class PlayerController : MonoBehaviour
     //-> 지면과 닿게 됨...isGround는 true를 반환해 점프할 수 있는 상태가 됨...
     //지면의 경사에 따라 오차가 생기는 것을 방지하기 위해 여유주기 /+0.1f/
         isGround = Physics.Raycast(transform.position, Vector3.down, capsuleCollider .bounds.extents.y + 0.1f);
+        theCrosshair.JumpingAnimation(!isGround); //(?)
     }
 
 
