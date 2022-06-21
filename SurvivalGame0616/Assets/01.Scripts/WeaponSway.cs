@@ -34,6 +34,41 @@ public class WeaponSway : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        TrySway();
+    }
+
+    private void TrySway()
+    {//상하좌우가 움직였을 떄
+        if(Input.GetAxisRaw("Mouse X") !=0 || Input.GetAxisRaw("Mouse Y") !=0)
+            Swaying();
+        else
+            BackToOriginPos();
+    }
+
+    private void Swaying()
+    {//임시변수
+    //정조준 상태가 아닐때의 무기 흔들림
+        float _moveX = Input.GetAxisRaw("Mouse X");
+        float _moveY = Input.GetAxisRaw("Mouse Y");
+
+        if (!theGunController.isFineSightMode)
+        {
+            //부드럽게 움직이도록value에 lerp 값 주기
+            currentPos.Set(Mathf.Clamp(Mathf.Lerp(currentPos.x, -_moveX, smoothSway.x), -limitPos.x, limitPos.x),
+                Mathf.Clamp(Mathf.Lerp(currentPos.y, -_moveY, smoothSway.y), -limitPos.y, limitPos.y),
+                originPos.z);
+        }
+        else
+        {   //정조준 상태일때는 살짝 흔들리게 처리..
+            currentPos.Set(Mathf.Clamp(Mathf.Lerp(currentPos.x, -_moveX, smoothSway.x), -fineSightLimitPos.x, fineSightLimitPos.x),
+                Mathf.Clamp(Mathf.Lerp(currentPos.y, -_moveY, smoothSway.y), -fineSightLimitPos.y, fineSightLimitPos.y),
+                originPos.z);
+        }        
+        transform.localPosition = currentPos;
+    }
+
+    private void BackToOriginPos()
+    {
         
     }
 }
