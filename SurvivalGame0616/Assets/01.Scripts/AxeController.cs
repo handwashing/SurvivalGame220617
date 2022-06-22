@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class AxeController : CloseWeaponController
 {
-    //활성화 여부
-    public static bool isActivate = false;
+     //활성화 여부
+     public static bool isActivate = true;
+
+     private void Start()//임시
+     {
+        WeaponManager.currentWeapon = currentCloseWeapon.GetComponent<Transform>();
+        WeaponManager.currentWeaponAnim = currentCloseWeapon.anim;
+     }
     
     void Update()
     {
@@ -13,7 +19,7 @@ public class AxeController : CloseWeaponController
             TryAttack();
     }
 
-    protected override IEnumerator HitCoroutine()
+     protected override IEnumerator HitCoroutine()
     {
         while (isSwing)
         {
@@ -25,5 +31,16 @@ public class AxeController : CloseWeaponController
             yield return null;
         }
     }
-}
+
+    public override void CloseWeaponChange(CloseWeapon _closeWeapon)
+    {
+        base.CloseWeaponChange(_closeWeapon);
+        isActivate = true;
+    }
+ }
+
+
+    
+    
+
 

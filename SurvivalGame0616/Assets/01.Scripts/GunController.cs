@@ -5,7 +5,7 @@ using UnityEngine;
 public class GunController : MonoBehaviour
 {
     //활성화 여부
-    public static bool isActivate = true;
+    public static bool isActivate = false;
 
     //현재 장착된 총
     [SerializeField]
@@ -17,7 +17,7 @@ public class GunController : MonoBehaviour
     //상태 변수
     private bool isReload = false; 
     [HideInInspector]
-    private bool isFineSightMode = false;
+    public bool isFineSightMode = false; //원래 private인데 접근 오류나서 일시 변경
 
     //본래 포지션 값
     [SerializeField]
@@ -44,8 +44,7 @@ public class GunController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         theCrosshair = FindObjectOfType<Crosshair>();
 
-        WeaponManager.currentWeapon = currentGun.GetComponent<Transform>();
-        WeaponManager.currentWeaponAnim = currentGun.anim;
+
     }
 
     void Update()

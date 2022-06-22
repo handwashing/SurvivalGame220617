@@ -23,6 +23,7 @@ public class WeaponSway : MonoBehaviour
     private Vector3 smoothSway;
 
     //필요한 컴퍼넌트
+    [SerializeField]
     private GunController theGunController;   //(총의 경우)정조준 상태를 받아올 수 있는 값이 필요
 
 
@@ -47,20 +48,21 @@ public class WeaponSway : MonoBehaviour
 
     private void Swaying()
     {//임시변수
-    //정조준 상태가 아닐때의 무기 흔들림
+    //정조준 상태가 아닐때의 무기 흔들림 / 마우스의 움직임값을 각각 변수에 대입
         float _moveX = Input.GetAxisRaw("Mouse X");
         float _moveY = Input.GetAxisRaw("Mouse Y");
 
         if (!theGunController.isFineSightMode)
         {
-            //부드럽게 움직이도록value에 lerp 값 주기
+            //부드럽게 움직이도록value에 lerp 값 주고 currentPos에 넣어주기!
+            //화면 밖으로 벗어나지 않게 Mathf.Clamp로 가두기  
             currentPos.Set(Mathf.Clamp(Mathf.Lerp(currentPos.x, -_moveX, smoothSway.x), -limitPos.x, limitPos.x),
-                Mathf.Clamp(Mathf.Lerp(currentPos.y, -_moveY, smoothSway.y), -limitPos.y, limitPos.y),
+                Mathf.Clamp(Mathf.Lerp(currentPos.y, -_moveY, smoothSway.x), -limitPos.y, limitPos.y),
                 originPos.z);
         }
         else
         {   //정조준 상태일때는 살짝 흔들리게 처리..
-            currentPos.Set(Mathf.Clamp(Mathf.Lerp(currentPos.x, -_moveX, smoothSway.x), -fineSightLimitPos.x, fineSightLimitPos.x),
+            currentPos.Set(Mathf.Clamp(Mathf.Lerp(currentPos.x, -_moveX, smoothSway.y), -fineSightLimitPos.x, fineSightLimitPos.x),
                 Mathf.Clamp(Mathf.Lerp(currentPos.y, -_moveY, smoothSway.y), -fineSightLimitPos.y, fineSightLimitPos.y),
                 originPos.z);
         }        
@@ -69,6 +71,7 @@ public class WeaponSway : MonoBehaviour
 
     private void BackToOriginPos()
     {
-        
+        currentPos = Vector3.Lerp(currentPos, originPos, smoothSway.x);
+        transform.localPosition = currentPos; 
     }
 }

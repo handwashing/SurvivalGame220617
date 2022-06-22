@@ -53,7 +53,7 @@ public abstract class CloseWeaponController : MonoBehaviour
 //Delay A,B사이에 계속 닿은것이 있는지를 체크...
     
     //abstract -> 미완성으로 남겨 자식 클래스가 완성시키도록 하는 추상코루틴
-    protected abstract IEnumerator HitCoroutine();
+    protected abstract IEnumerator HitCoroutine();  
  
 
     protected bool CheckObject()
@@ -65,19 +65,19 @@ public abstract class CloseWeaponController : MonoBehaviour
         return false; //충돌한 게 없음
     }
 
-    // public void CloseWeaponChange(CloseWeapon _closeWeapon)
-    // {
-    //     if (WeaponManager .currentWeapon != null)
-    //         WeaponManager .currentWeapon.gameObject.SetActive(false);
+    //가상 함수(완성 함수이지만, 추가 편집은 가능)
+    public virtual void CloseWeaponChange(CloseWeapon _closeWeapon)
+    {
+        if (WeaponManager .currentWeapon != null)
+            WeaponManager .currentWeapon.gameObject.SetActive(false);
         
-    //     currentCloseWeapon = _closeWeapon;
-    //     WeaponManager .currentWeapon = currentCloseWeapon.GetComponent<Transform>();
-    //     WeaponManager .currentWeaponAnim = currentCloseWeapon.anim;
+        currentCloseWeapon = _closeWeapon;
+        WeaponManager .currentWeapon = currentCloseWeapon.GetComponent<Transform>();
+        WeaponManager .currentWeaponAnim = currentCloseWeapon.anim;
 
-    //     currentCloseWeapon.transform.localPosition = Vector3.zero;
-    //     currentCloseWeapon.gameObject.SetActive(true);
-    //     isActivate = true;
-    // }
+        currentCloseWeapon.transform.localPosition = Vector3.zero;
+        currentCloseWeapon.gameObject.SetActive(true);
+    }
 
 }
 
