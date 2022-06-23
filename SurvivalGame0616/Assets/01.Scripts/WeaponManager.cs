@@ -29,12 +29,15 @@ public class WeaponManager : MonoBehaviour
     private CloseWeapon[] hands;
     [SerializeField]
     private CloseWeapon[] axes;
+    [SerializeField]
+    private CloseWeapon[] pickaxes;
 
     //관리 차원에서 쉽게 무기 접근이 가능하도록 만들기
     private Dictionary<string, Gun> gunDictionary = new Dictionary<string, Gun>();
     private Dictionary<string, CloseWeapon> handDictionary = new Dictionary<string, CloseWeapon>();
     
     private Dictionary<string, CloseWeapon> axeDictionary = new Dictionary<string, CloseWeapon>();
+    private Dictionary<string, CloseWeapon> pickaxeDictionary = new Dictionary<string, CloseWeapon>();
 
     //필요한 컴퍼넌트
     [SerializeField]
@@ -43,6 +46,8 @@ public class WeaponManager : MonoBehaviour
     private HandController theHandController;
     [SerializeField]
     private AxeController theAxeController;
+    [SerializeField]
+    private PickaxeController thePickaxeController;
 
 
     void Start()
@@ -57,7 +62,11 @@ public class WeaponManager : MonoBehaviour
         }  
         for (int i = 0; i < axes.Length; i++)
         {
-            handDictionary.Add(axes[i].closeWeaponName, axes[i]);
+            axeDictionary.Add(axes[i].closeWeaponName, axes[i]);
+        }  
+        for (int i = 0; i < pickaxes.Length; i++)
+        {
+            pickaxeDictionary.Add(pickaxes[i].closeWeaponName, pickaxes[i]);
         }  
     }
 
@@ -73,6 +82,9 @@ public class WeaponManager : MonoBehaviour
         //숫자 3이 눌렸을 경우 / 무기 교체 실행(도끼) 
             else if (Input.GetKeyDown(KeyCode.Alpha3))
                 StartCoroutine(ChangeWeaponCoroutine("AXE", "Axe"));
+        //숫자 4가 눌렸을 경우 / 무기 교체 실행(곡괭이) 
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+                StartCoroutine(ChangeWeaponCoroutine("PICKAXE", "Pickaxe"));
         }
     }
 
@@ -109,6 +121,9 @@ public class WeaponManager : MonoBehaviour
             case "AXE":
                 AxeController.isActivate = false; //Axe상태일때 우클릭해도 정조준이 안될 것
                 break;
+            case "PICKAXE":
+                PickaxeController.isActivate = false; //Axe상태일때 우클릭해도 정조준이 안될 것
+                break;
         }
     }
 
@@ -121,5 +136,7 @@ public class WeaponManager : MonoBehaviour
             theHandController.CloseWeaponChange(handDictionary[_name]);
         else if (_type == "AXE")
             theAxeController.CloseWeaponChange(axeDictionary[_name]);
+        else if (_type == "PICKAXE")
+            thePickaxeController.CloseWeaponChange(pickaxeDictionary[_name]);
     }
 }
