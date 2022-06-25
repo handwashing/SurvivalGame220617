@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Sound //다른 객체에 컴퍼넌트 추가할 수 없음(BCZ / MonoBehaviour 상속 x)
 {
     public string name; //곡의 이름
@@ -30,8 +31,15 @@ public class SoundManager : MonoBehaviour
     public AudioSource[] audioSourceEffects; //동시에 여러개 재생할 수 있도록 배열 사용
     public AudioSource audioSourceBgm; //Bgm은 하나만 필요 -> 배열 필요x
 
+    public string[] playSoundName; //특정한 곡만 정지시킬때...
+
     public Sound[] effectSounds; //<- 이와 같이 class Sound의 내용을 변수로 만들어 가져다 쓰면 된다...
     public Sound[] bgmSounds;
+
+    void Start() //게임이 시작할 때 자동으로 오디오 소스의 개수와 string배열의 개수가 일치되게...
+    {
+        playSoundName = new string[audioSourceEffects.Length]; //playSoundName 배열 개수 생성 (audioSourceEffects의 개수만큼...)
+    }
 
     public void PlaySE(string _name)
     {//_name이 Sound의 name과 일치한다면 -> clip을 AudioSource에 넣어 재생시킬 것
@@ -40,14 +48,43 @@ public class SoundManager : MonoBehaviour
         for (int i = 0; i < effectSounds.Length; i++)
         {
             if(_name == effectSounds[i].name) //_name와 effectSounds의 i번째 name과 일치하다면
-            {
+            {//재생중이지 않은 오디오소스를 찾아 재생시키기
                 for (int j = 0; j < audioSourceEffects.Length; j++)
                 {
-                    if(audioSourceEffects[j].isPlaying);
+                    if(!audioSourceEffects[j].isPlaying) //audioSourceEffects의 배열 j번째가 재생중이 아니라면...
+                    {
+                        playSoundName[j] = effectSounds[i].name;  //효과음의 이름을 playSoundName[j]스트링에 넣어준 것... /(재생중인 오디오 소스가 있으면) playSoundName[j]와 이름을 일치시킨 것...                
+                        audioSourceEffects[j].clip = effectSounds[i].clip; //j번째의 곡을 i번째 클립으로 교체해준다
+                        audioSourceEffects[j].Play(); //Play
+                        return;
+                    }
                 }
+                Debug.Log("모든 가용 AudioSource가 사용중임");
+                return;
             }
         }                                 
- //재생중인 것은 재생시키게 내버려두고 재생중이지 않은 오디오소스를 찾아 재생시키기(흐름이 끊기지 않도록)
- //재생중이지 않은 오디오 소스를 찾도록...
+        Debug.Log(_name + "사운드가 SoundManager에 등록되지 않았음");
     }
+
+    public void StopAllSE() //모든 효과음 재생 정지
+    {
+        for (int i = 0; i < audioSourceEffects.Length; i++) //오디오소스 개수만큼 반복
+        {
+            audioSourceEffects[i].Stop(); //오디오소스의 i번째를 전부 Stop 시키기...
+        }       
+    }
+
+     //특정한 곡만 재생 정지
+     public void StopSE(string _name)
+     {
+        for (int i = 0; i < audioSourceEffects.Length; i++) 
+        {
+            if(playSoundName[i] == _name)    //playSoundName i번째와 일치한게 있다면
+            {
+                audioSourceEffects[i].Stop(); //정지시키기
+                return;
+            }
+        } 
+        Debug.Log("재생 중인" + _name + "사운드가 없음");
+     }
 }
