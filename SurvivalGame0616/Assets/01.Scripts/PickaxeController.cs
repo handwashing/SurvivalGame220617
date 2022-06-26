@@ -29,6 +29,10 @@ public class PickaxeController : CloseWeaponController
                 {//Rock 클래스 안의 Mining을 호출
                     hitInfo.transform.GetComponent<Rock>().Mining();
                 }
+                else if(hitInfo.transform.tag == "Twig") //나뭇가지와 부딪혔을 경우
+                {//Twig 클래스 안의 Damage 호출 / 플레이어 transform도 함께 가져오기 / FineObjectOfType을 통해 얻어와도 된다
+                    hitInfo.transform.GetComponent<Twig>().Damage(this.transform); //도끼의 위치임
+                }
                 isSwing = false;
                 Debug.Log(hitInfo.transform.name);
             }
