@@ -12,6 +12,10 @@ public class Grass : MonoBehaviour
     [SerializeField]
     private float destroyTime;
 
+    //폭발력 세기
+    [SerializeField]
+    private float force;
+
     //타격 효과
     [SerializeField]
     private GameObject go_hit_effect_prefab;
@@ -55,6 +59,13 @@ public class Grass : MonoBehaviour
 
     private void Destruction()
     {
-        
+        for (int i = 0; i < rigidbodies.Length; i++)
+        {
+            rigidbodies[i].useGravity = true;
+            rigidbodies[i].AddExplosionForce(1f, transform.position, 1f); //폭발세기, 폭발위치(자기 자신의 위치), 폭발반경
+            boxColliders[i].enabled = true;
+        }
+
+        Destroy(this.gameObject, destroyTime);
     }
 }
