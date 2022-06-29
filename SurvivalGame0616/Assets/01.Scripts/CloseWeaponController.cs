@@ -22,30 +22,39 @@ public abstract class CloseWeaponController : MonoBehaviour
         {
             if (!isAttack)
             {
-                StartCoroutine(AttackCoroutine());
+                if(CheckObject())
+                {
+                    if(currentCloseWeapon.isAxe && hitInfo.transform.tag == "Tree")
+                    {
+                        StartCoroutine(AttackCoroutine("Chop", currentCloseWeapon.workDelayA, currentCloseWeapon.workDelayB, currentCloseWeapon.workDelay));
+                        return;
+                    }
+                }               
+
+                StartCoroutine(AttackCoroutine("Attack", currentCloseWeapon.attackDelayA, currentCloseWeapon.attackDelayB, currentCloseWeapon.attackDelay));
             }
         }
     }
 //마우스 좌클릭을 하는 순간 StartCoroutine(AttackCoroutine() 코루틴이 실행되고,
 //바로 isAttack = true가 되면서 중복 실행이 막아진다!
 //마지막에 isAttack = false를 줘서 실행시키기...!
-    protected IEnumerator AttackCoroutine()
+    protected IEnumerator AttackCoroutine(string swingType, float _delayA, float _delayB, float _delayC)
     {
         isAttack = true;
-        currentCloseWeapon.anim.SetTrigger("Attack"); //Attack애니메이션 실행
+        currentCloseWeapon.anim.SetTrigger(swingType); //Attack애니메이션 실행
 
-        yield return new WaitForSeconds(currentCloseWeapon.attackDelayA);//currentCloseWeapon.attackDelayA 만큼 대기시간 주기...
+        yield return new WaitForSeconds(_delayA);//(currentCloseWeapon.attackDelayA) _delayA만큼 대기시간 주기...
         isSwing = true; //공격 들어감 true가 된 순간 공격이 적중했는지 구분하는 함수(코루틴)
 
         //적중 여부를 판단할 수 있는 코루틴 반복 실행...
         StartCoroutine(HitCoroutine());
 
-        yield return new WaitForSeconds(currentCloseWeapon.attackDelayB); //또 대기시간 주기
+        yield return new WaitForSeconds(_delayB); //또 대기시간 주기
         isSwing = false; //일정 시간이 지나면 false 가 되어 HitCoroutine이 꺼짐
 
         //공격할 수 있게 대기...
         //딱 attackDelay 만큼 쉴 수 있게 그 전의 A,B값을 빼줌...
-        yield return new WaitForSeconds(currentCloseWeapon.attackDelay - currentCloseWeapon.attackDelayA - currentCloseWeapon.attackDelayB);
+        yield return new WaitForSeconds(_delayC - _delayA - _delayB);
         isAttack = false; //false를 줘서 재공격할 수 있도록 만들었다...
     }
 

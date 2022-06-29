@@ -10,6 +10,10 @@ public class TreeComponent : MonoBehaviour
     [SerializeField]
     private GameObject go_treeCenter; //중간에 있는 나무 piece
 
+    //통나무
+    [SerializeField]
+    private GameObject go_Log_Prefabs;
+
     //쓰러질 때 랜덤으로 가해질 힘의 세기
     [SerializeField]
     private float force;
@@ -29,6 +33,7 @@ public class TreeComponent : MonoBehaviour
     private Rigidbody childRigid;
 
     //파편
+    [SerializeField]
     private GameObject go_hit_effect_prefab;
 
     //파편 제거 시간
@@ -67,10 +72,10 @@ public class TreeComponent : MonoBehaviour
     {
         SoundManager.instance.PlaySE(chop_sound);
 
-        /*
+
         GameObject clone = Instantiate(go_hit_effect_prefab, _pos, Quaternion.Euler(Vector3.zero));
         Destroy(clone, debrisDestroyTime);
-        */
+
     }
 
     private void AngleCalc(float _angleY)
@@ -92,6 +97,8 @@ public class TreeComponent : MonoBehaviour
     {//피스가 있는 상태에서만 실행...(피스가 없는 상태에서 피스를 파괴하라고 하면 오류날 것)
         if(go_treePieces[_num].gameObject != null)
         {
+            GameObject clone = Instantiate(go_hit_effect_prefab, go_treePieces[_num].transform.position, Quaternion.Euler(Vector3.zero));
+            Destroy(clone, debrisDestroyTime);
             Destroy(go_treePieces[_num].gameObject);
         }
     }
@@ -110,6 +117,7 @@ public class TreeComponent : MonoBehaviour
 
     private void FallDownTree()
     {
+        SoundManager.instance.PlaySE(falldown_sound);
         Destroy(go_treeCenter);
 
         parentCol.enabled = false; //부모 트리의 콜라이더 비활성화 (콜라이더끼리의 충돌 방지)
@@ -118,6 +126,19 @@ public class TreeComponent : MonoBehaviour
 
         childRigid.AddForce(Random.Range(-force,force), 0f, Random.Range(-force,force)); //나무가 기울어지도록 랜덤으로 힘주기
     
-        Destroy(go_ChildTree.gameObject, destroyTime);
+        StartCoroutine(LogCoroutine()); //나무가 쓰러지고 destroyTime후에 통나무 생성(코루틴)
+    }
+
+    IEnumerator LogCoroutine()
+    {
+        yield return new WaitForSeconds(destroyTime); //destroyTime만큼 대기
+
+        SoundManager.instance.PlaySE(logChange_sound);
+
+        Instantiate(go_Log_Prefabs, go_ChildTree.transform.position + (go_ChildTree.transform.up * 3f), Quaternion.LookRotation(go_ChildTree.transform.up)); //나무가 쓰러지는 위치에 통나무 생성 / go_ChildTree가 쓰러지는 방향의 위로 향하도록
+        Instantiate(go_Log_Prefabs, go_ChildTree.transform.position + (go_ChildTree.transform.up * 6f), Quaternion.LookRotation(go_ChildTree.transform.up));
+        Instantiate(go_Log_Prefabs, go_ChildTree.transform.position + (go_ChildTree.transform.up * 9f), Quaternion.LookRotation(go_ChildTree.transform.up));
+        
+        Destroy(go_ChildTree.gameObject);
     }
 }

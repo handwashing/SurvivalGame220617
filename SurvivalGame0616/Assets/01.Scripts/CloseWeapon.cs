@@ -17,6 +17,10 @@ public class CloseWeapon : MonoBehaviour
     public float attackDelay; //attck Delay
     public float attackDelayA; //공격 활성화 시점(딜레이)
     public float attackDelayB; //공격 비활성화 시점
+
+    public float workDelay; //작업 Delay
+    public float workDelayA; //작업 활성화 시점(딜레이)
+    public float workDelayB; //작업 비활성화 시점
     
     public Animator anim; //animation
     //public BoxCollider boxCollider; -> 주먹에 박스 콜라이더를 만들어 충돌한 물체에 데미지를 줄 수 있다. but 주먹이 휘두를때 1인칭 시점과 박스 콜라이더의 위치가 다르게 보일 수 있음
